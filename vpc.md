@@ -1,99 +1,133 @@
-✅ Step 1: Create Stack using CloudFormation YAML
+✅ Step 1: Create CloudFormation Stack
 
-Go to AWS Console > CloudFormation
+Objective: Provision VPC, public/private subnets, and EC2 instances using a CloudFormation YAML template.
 
-Click Create Stack > With new resources
+Log in to the AWS Management Console.
 
-Choose Upload a template file
+Navigate to CloudFormation service.
 
-Upload your YAML file (provided earlier like AJA_network_with_EC2.yaml)
+Click on Create Stack > With new resources (standard).
 
-Click Next, give a stack name like MyAppStack
+Under "Specify template", select Upload a template file.
 
-Review and create the stack
+Upload the YAML file (e.g., AJA_network_with_EC2.yaml).
 
-Wait for CREATE_COMPLETE status
+Click Next.
 
-✅ Step 2: Confirm Public & Private EC2 Servers
+Enter a suitable Stack Name, such as MyAppStack.
 
-Go to EC2 Dashboard
+Click through the configuration pages and review all settings.
 
-Verify:
+Finally, click Create Stack.
 
-One Public EC2 (with public IP)
+<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/8a0363b6-9600-4534-9616-6e794b2a13eb" />
 
-One Private EC2 (no public IP)
+Wait until the status shows CREATE_COMPLETE.
 
-Ensure both are inside the same VPC created by your stack
+✅ Step 2: Validate EC2 Instances
 
-✅ Step 3: Open Required Ports on Public Server
+Objective: Confirm both EC2 instances are created and belong to the same VPC.
 
-Go to Security Groups > Public EC2's SG
+Navigate to the EC2 Dashboard.
 
-Edit Inbound Rules:
+Under Instances, confirm the following:
 
-SSH: TCP 22
+A Public EC2 Instance with a public IP.
 
-MySQL/Aurora: TCP 3306
+A Private EC2 Instance without a public IP.
 
-HTTP (for app): TCP 8080
+Check the VPC ID of both instances to ensure they are in the same VPC created by the stack.
 
-✅ Step 4: Setup NAT Gateway
+✅ Step 3: Configure Security Group (Public Server)
 
-Create Elastic IP in AWS
+Objective: Open necessary ports for SSH, database access, and application traffic.
 
-Go to VPC > NAT Gateways > Create NAT Gateway:
+Go to Security Groups in the EC2 console.
 
-Select public subnet
+Select the Security Group attached to the Public EC2.
 
-Attach Elastic IP
+Edit Inbound Rules and add the following:
 
-Go to Route Tables > Private Route Table:
+SSH: TCP Port 22 from 0.0.0.0/0
 
-Add route: 0.0.0.0/0 via NAT Gateway
+MySQL/Aurora: TCP Port 3306 from 0.0.0.0/0
 
-✅ Step 5: Connect to Private Server via Jump Host (Public EC2)
+HTTP (App): TCP Port 8080 from 0.0.0.0/0
 
-SSH into Public EC2:
+✅ Step 4: Set Up NAT Gateway
 
-ssh -i key.pem ec2-user@<public-ec2-ip>
+Objective: Allow private EC2 to access the internet for downloading packages.
 
-From Public EC2, SSH to Private EC2:
+Go to VPC Dashboard > Elastic IPs, and allocate a new Elastic IP.
+
+Navigate to NAT Gateways > Create NAT Gateway:
+
+Select the Public Subnet.
+
+Attach the newly created Elastic IP.
+
+Go to Route Tables > Private Route Table.
+
+Edit routes and add the following:
+
+Destination: 0.0.0.0/0
+
+Target: Your NAT Gateway ID
+
+✅ Step 5: Connect to Private EC2 via Jump Host
+
+Objective: Use the Public EC2 instance as a jump host to access the Private EC2.
+
+SSH into the Public EC2 instance:
+
+ssh -i key.pem ec2-user@<public-ec2-public-ip>
+
+From the Public EC2 terminal, SSH into the Private EC2:
 
 ssh -i key.pem ec2-user@<private-ec2-private-ip>
 
-✅ Step 6: Install Required Tools on Both EC2s
+✅ Step 6: Install Required Packages on EC2s
 
-Run the following on both EC2s (especially private EC2):
+Objective: Prepare environment with required tools on both EC2 instances.
+
+Run the following commands on both instances:
 
 sudo yum update -y
 sudo yum install git maven java-1.8.0-openjdk -y
 
-✅ Step 7: Clone GitHub Java App
+✅ Step 7: Clone Java Application Repository
 
-On the Private EC2:
+Objective: Download the Java application code from GitHub.
+
+On the Private EC2, run:
 
 git clone https://github.com/Ai-TechNov/aws-rds-java.git
 cd aws-rds-java
 
-✅ Step 8: Install & Start Tomcat Server
+✅ Step 8: Install and Start Apache Tomcat
+
+Objective: Deploy Java WAR file to Tomcat application server.
+
+Run the following:
 
 sudo yum install tomcat -y
 sudo systemctl start tomcat
 sudo systemctl enable tomcat
 
-✅ Step 9: Setup MySQL Database (on Private EC2)
+✅ Step 9: Set Up MySQL Database
 
-Install MySQL Server:
+Objective: Create a database and table to support the Java app.
+
+Install MySQL server on the Private EC2:
 
 sudo yum install mysql-server -y
 sudo systemctl start mysqld
 
-Login to MySQL:
+Open MySQL shell:
 
 mysql -u root
 
-Create DB and Table:
+Execute the following SQL commands:
 
 CREATE DATABASE jwt;
 USE jwt;
@@ -104,16 +138,42 @@ CREATE TABLE USER (
   password VARCHAR(100)
 );
 
-✅ Step 10: Build & Deploy App with Maven
+✅ Step 10: Build and Deploy the Java Application
+
+Objective: Package the application using Maven and deploy it to Tomcat.
+
+Run the following in the app directory:
 
 mvn clean package
 cp target/*.war /usr/share/tomcat/webapps/app.war
 
-✅ Step 11: Access the Java App
+✅ Step 11: Access the Deployed Application
 
-Open browser: http://<public-ec2-ip>:8080/app
+Objective: Verify successful deployment from the browser.
 
-It should load your Java app (connected to the MySQL database on private EC2)
+Open your web browser.
 
-DONE! 🎉 You have successfully deployed a Java application on AWS using Git, CloudFormation, Maven, and Tomcat!
+Visit:
+
+http://<public-ec2-public-ip>:8080/app
+
+You should see the Java application UI, backed by the database running on Private EC2.
+
+✅ Final Result
+
+You have successfully deployed a Java-based web application on AWS using:
+
+AWS CloudFormation for infrastructure
+
+EC2 (public & private)
+
+NAT Gateway & Jump Hosting
+
+Git + Maven + Tomcat for application setup
+
+MySQL for database
+
+This setup is scalable, secure, and cloud-native for production-like deployments.
+
+
 
