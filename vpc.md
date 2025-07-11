@@ -1,86 +1,219 @@
-🚀 AWS 2-Tier Web Application Deployment
-📝 1. Project Overview
-This project demonstrates how to deploy a secure and scalable 2-tier web application with vpc on AWS using infrastructure-as-code with CloudFormation.
+AWS 2-Tier Web Application Deployment — Full Documentation
+1. Project Objective
+Deploy a secure and scalable 2-tier Java-based web application on AWS, using CloudFormation (IaC) to manage infrastructure. It includes:
 
-🔧 What This Project Includes:
+Custom VPC
 
+Public/Private EC2 instances
 
-🛡️ A custom VPC split into public and private subnets
-🖥️ A public EC2 instance that acts as both:
-A web server (running Apache Tomcat)
-A bastion host to access private resources
-🛠️ A private EC2 instance used to test database connections securely
-🗄️ An RDS MySQL database in the private subnet
-💻 A Java web application hosted on Apache Tomcat, connected to RDS
-🎯 Purpose:
-Demonstrate network isolation using subnets
-Ensure secure database access via a bastion host
-Deploy a full-stack Java app using CI-like steps with Maven and Tomcat
-Practice CloudFormation templating
-🗺️ 2. Architecture Diagram
-🧩 You can create this using draw.io, Lucidchart, or embed an image in your final report.
+Bastion host architecture
 
-       [ Your Laptop ]
-             |
-           SSH
-             ↓
-  [ Public EC2 (Bastion + App) ]
-             |
-          SSH (Internal)
-             ↓
-  [ Private EC2 (DB Tester) ]
-             ↓
-    [ RDS MySQL in Private Subnet ]
+RDS MySQL backend
 
-    
-It should include:
+Apache Tomcat + Maven-built Java web app
 
-A VPC with:
-🌐 Public Subnet (e.g., us-east-1a)
-🔒 Private Subnet (e.g., us-east-1b)
-EC2 instances:
-☁️ Public EC2 = App + Bastion Host
-🔐 Private EC2 = DB Test Client
-📶 Internet Gateway connected to public route table
-🧷 NAT (optional for outbound access if needed)
-🗄️ RDS MySQL in the private subnet
+2. Architecture Diagram
+Use a tool like draw.io or Lucidchart to draw this:
 
-🧰 3. Prerequisites
-To successfully deploy this project, you need:
+csharp
+Copy
+Edit
+   [Your Laptop]
+         |
+        SSH
+         ↓
+ [Public EC2 (Web + Bastion)]
+         |
+        SSH
+         ↓
+ [Private EC2 (DB Tester)]
+         ↓
+ [RDS MySQL in Private Subnet]
+3. Prerequisites
+Before deployment:
 
-✅ An AWS account
-🔑 A key pair (.pem) to SSH into EC2 instances
-📦 Basic tools:
-Git, Java (JRE), Maven
-Apache Tomcat (manual or script-based setup)
-🧠 Knowledge of:
-Linux shell basics
-MySQL operations
-AWS EC2, VPC, and RDS
-💻 Terminal or SSH client (e.g., PuTTY for Windows)
+✅ AWS Account
+✅ AWS Key Pair (.pem)
+✅ Tools: Git, Java (JRE), Maven, Apache Tomcat
+✅ Basic Knowledge: EC2, VPC, SSH, MySQL
+✅ Terminal or PuTTY (for SSH from Windows)
 
- 4. VPC Setup Using CloudFormation
-You provisioned networking infrastructure with a CloudFormation YAML template that creates:
+4. VPC Setup with CloudFormation
+🛠 Use the following components in a YAML file (vpc-setup.yaml):
 
-A VPC (10.0.0.0/16)
-Two subnets:
-10.0.0.0/20 (public)
-10.0.16.0/20 (private)
-Internet Gateway and public routing
-Route tables for subnet association
-📄 Tip: Include your YAML file in your project folder or repository as vpc-setup.yaml.
+a. Create VPC
+CIDR: 10.0.0.0/16
 
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/95f07b54-1de5-4e94-bd09-1b07701cf3b4" />
+b. Create Subnets
+Public Subnet: 10.0.0.0/20 (AZ: us-east-1a)
 
-<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/945975bc-c9db-46a0-b4e0-7f7060fdf9f0" />
+Private Subnet: 10.0.16.0/20 (AZ: us-east-1b)
 
-<img width="1920" height="1080" alt="Screenshot 2025-07-09 21 27 21" src="https://github.com/user-attachments/assets/94fae3b9-3e6c-46fb-8d25-caac49c72e25" />
+c. Create:
+Internet Gateway
 
-<img width="1920" height="1080" alt="Screenshot 2025-07-09 21 27 33" src="https://github.com/user-attachments/assets/711bffe1-174e-428a-930b-800b48243262" />
+Public Route Table with IGW association
 
-<img width="1920" height="1080" alt="Screenshot 2025-07-09 21 27 45" src="https://github.com/user-attachments/assets/9b1dfcca-f8c6-4575-9b02-98afef077ab6" />
+Route Table Associations
 
-<img width="1920" height="1080" alt="Screenshot 2025-07-09 21 34 40" src="https://github.com/user-attachments/assets/24720b43-3563-4689-9968-53e54452cf49" />
+Optional: NAT Gateway (for outbound internet from private subnet)
+
+✅ Steps:
+Go to AWS → CloudFormation
+
+Click Create Stack → With new resources
+
+Upload vpc-setup.yaml
+
+Click Next, provide stack name → My2TierApp
+
+Click Create Stack
+
+Wait for status: CREATE_COMPLETE
+
+5. EC2 Instance Setup
+🟢 Public EC2: Web Server + Bastion Host
+AMI: Ubuntu 20.04 or Amazon Linux
+
+Subnet: Public
+
+Security Group Inbound Rules:
+
+SSH (22) → Your IP
+
+HTTP (8080) → Anywhere (0.0.0.0/0)
+
+Install: Git, Java, Maven, Tomcat
+
+Deploy app + allow SSH to private instance
+
+🔒 Private EC2: DB Tester
+AMI: Ubuntu/Amazon Linux
+
+Subnet: Private
+
+Security Group Inbound:
+
+SSH (22) → Allow only from Public EC2 Private IP
+
+6. SSH Access Using Bastion Host
+From Local:
+
+bash
+Copy
+Edit
+ssh -A -i my-key.pem ec2-user@<public-ec2-public-ip>
+From Public EC2 to Private EC2:
+
+bash
+Copy
+Edit
+ssh ec2-user@<private-ec2-private-ip>
+✅ Tips:
+
+Use SSH Agent Forwarding (-A)
+
+Ensure .pem is not copied to public EC2
+
+Security group allows internal traffic on port 22
+
+7. RDS MySQL Database Setup
+Go to RDS → Create Database:
+
+Engine: MySQL
+
+Subnet group: Private Subnet
+
+Public Access: No
+
+Credentials: admin / password
+
+VPC: Select your custom VPC
+
+✅ Once created:
+
+Note the endpoint (e.g., database-1.c7k4u266e1cr.us-east-1.rds.amazonaws.com)
+
+From Private EC2, test connection:
+
+bash
+Copy
+Edit
+mysql -h <RDS-endpoint> -u admin -p
+8. Deploy Java Web Application on Apache Tomcat
+On Public EC2 (App Server):
+
+bash
+Copy
+Edit
+# Update & install dependencies
+sudo apt update
+sudo apt install git unzip -y
+sudo apt install openjdk-17-jre-headless maven -y
+
+# Clone and build the app
+git clone https://github.com/shiva7919/aws-rds-java.git
+cd aws-rds-java
+mvn clean package
+
+# Download Tomcat and deploy WAR
+wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.107/bin/apache-tomcat-9.0.107.zip
+unzip apache-tomcat-9.0.107.zip
+cp target/*.war apache-tomcat-9.0.107/webapps/
+
+# Start Tomcat
+cd apache-tomcat-9.0.107/bin
+chmod 755 *.sh
+sh startup.sh
+9. Test the Application
+🔗 Open in browser:
+
+pgsql
+Copy
+Edit
+http://<public-ec2-public-ip>:8080/aws-rds-java
+Test Pages:
+
+/login.jsp
+
+/userRegistration.jsp
+
+✅ These pages connect to the RDS DB using JDBC — credentials are in app config.
+
+10. Security Group Summary
+Resource	Port	Source	Purpose
+Public EC2	22	Your IP	SSH from your system
+Public EC2	8080	0.0.0.0/0	Web Access (Tomcat)
+Private EC2	22	Public EC2 Private IP	SSH via Bastion
+RDS MySQL	3306	Private EC2 Private IP	DB Access from App Server
+
+🔒 Follow least privilege and do not open RDS to public.
+
+11. Final Directory Tree
+bash
+Copy
+Edit
+aws-rds-java/
+├── pom.xml
+├── target/
+│   └── aws-rds-java.war
+└── apache-tomcat-9.0.107/
+    └── webapps/
+        └── aws-rds-java.war
+12. Conclusion
+🎯 You successfully:
+
+🏗️ Deployed VPC using CloudFormation
+
+💻 Launched EC2 instances in Public & Private Subnets
+
+🔐 Configured a Bastion Host for secure access
+
+🗄️ Deployed a Java web app using Maven & Tomcat
+
+🔗 Connected app securely to RDS MySQL database
+
+🔍 Verified functionality via browser and DB tests
 
 
 
