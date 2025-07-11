@@ -3,6 +3,8 @@
 This project demonstrates how to deploy a secure and scalable 2-tier web application with vpc on AWS using infrastructure-as-code with CloudFormation.
 
 🔧 What This Project Includes:
+
+
 🛡️ A custom VPC split into public and private subnets
 🖥️ A public EC2 instance that acts as both:
 A web server (running Apache Tomcat)
@@ -29,6 +31,8 @@ Practice CloudFormation templating
   [ Private EC2 (DB Tester) ]
              ↓
     [ RDS MySQL in Private Subnet ]
+
+    
 It should include:
 
 A VPC with:
