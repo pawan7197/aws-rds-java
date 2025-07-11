@@ -15,9 +15,6 @@ Apache Tomcat + Maven-built Java web app
 2. Architecture Diagram
 Use a tool like draw.io or Lucidchart to draw this:
 
-csharp
-Copy
-Edit
    [Your Laptop]
          |
         SSH
@@ -99,15 +96,9 @@ SSH (22) → Allow only from Public EC2 Private IP
 6. SSH Access Using Bastion Host
 From Local:
 
-bash
-Copy
-Edit
 ssh -A -i my-key.pem ec2-user@<public-ec2-public-ip>
 From Public EC2 to Private EC2:
 
-bash
-Copy
-Edit
 ssh ec2-user@<private-ec2-private-ip>
 ✅ Tips:
 
@@ -136,16 +127,12 @@ Note the endpoint (e.g., database-1.c7k4u266e1cr.us-east-1.rds.amazonaws.com)
 
 From Private EC2, test connection:
 
-bash
-Copy
-Edit
+
 mysql -h <RDS-endpoint> -u admin -p
 8. Deploy Java Web Application on Apache Tomcat
 On Public EC2 (App Server):
 
-bash
-Copy
-Edit
+
 # Update & install dependencies
 sudo apt update
 sudo apt install git unzip -y
@@ -168,9 +155,7 @@ sh startup.sh
 9. Test the Application
 🔗 Open in browser:
 
-pgsql
-Copy
-Edit
+
 http://<public-ec2-public-ip>:8080/aws-rds-java
 Test Pages:
 
@@ -190,9 +175,8 @@ RDS MySQL	3306	Private EC2 Private IP	DB Access from App Server
 🔒 Follow least privilege and do not open RDS to public.
 
 11. Final Directory Tree
-bash
-Copy
-Edit
+    
+
 aws-rds-java/
 ├── pom.xml
 ├── target/
