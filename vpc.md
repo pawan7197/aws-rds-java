@@ -68,6 +68,26 @@ Click Create Stack
 
 Wait for status: CREATE_COMPLETE
 
+<img width="1920" height="1080" alt="Screenshot 2025-07-09 21 12 47" src="https://github.com/user-attachments/assets/2dba8375-a9e2-49cf-bf27-8817454320fe" />
+
+<img width="1920" height="1080" alt="Screenshot 2025-07-09 21 27 08" src="https://github.com/user-attachments/assets/76b8c72d-3919-43dd-b999-0633522af22e" />
+
+<img width="1920" height="1080" alt="Screenshot 2025-07-09 21 27 21" src="https://github.com/user-attachments/assets/868e9828-7af5-447d-a00d-770f0f49daae" />
+
+<img width="1920" height="1080" alt="Screenshot 2025-07-09 21 27 33" src="https://github.com/user-attachments/assets/1db2d0bd-e237-4557-a3a0-4d93a0b78775" />
+
+<img width="1920" height="1080" alt="Screenshot 2025-07-09 21 27 45" src="https://github.com/user-attachments/assets/1b227bc1-3721-468d-a399-03803d27be0e" />
+
+<img width="1920" height="1080" alt="Screenshot 2025-07-09 21 34 40" src="https://github.com/user-attachments/assets/15e26777-600c-486e-b503-d3a8f3b50b9b" />
+
+
+
+
+
+
+
+
+
 5. EC2 Instance Setup
 🟢 Public EC2: Web Server + Bastion Host
 AMI: Ubuntu 20.04 or Amazon Linux
@@ -143,6 +163,9 @@ git clone https://github.com/shiva7919/aws-rds-java.git
 cd aws-rds-java
 mvn clean package
 
+<img width="1920" height="1080" alt="Screenshot 2025-07-09 22 33 02" src="https://github.com/user-attachments/assets/976d9aff-d767-419f-836d-d3f74b7678e1" />
+
+
 # Download Tomcat and deploy WAR
 wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.107/bin/apache-tomcat-9.0.107.zip
 unzip apache-tomcat-9.0.107.zip
@@ -152,14 +175,16 @@ cp target/*.war apache-tomcat-9.0.107/webapps/
 cd apache-tomcat-9.0.107/bin
 chmod 755 *.sh
 sh startup.sh
-9. Test the Application
-🔗 Open in browser:
+
+<img width="1920" height="1080" alt="Screenshot 2025-07-09 22 54 55" src="https://github.com/user-attachments/assets/1248427a-077b-4a2e-9b41-4fa2cda4b3bd" />
 
 
 http://<public-ec2-public-ip>:8080/aws-rds-java
 Test Pages:
 
 /login.jsp
+
+<img width="1244" height="615" alt="Image" src="https://github.com/user-attachments/assets/cfa49b87-f8a8-4150-a1a0-9af263c07a11" />
 
 /userRegistration.jsp
 
