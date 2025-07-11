@@ -82,6 +82,18 @@ Route tables for subnet association
 
 <img width="1920" height="1080" alt="Screenshot 2025-07-09 21 34 40" src="https://github.com/user-attachments/assets/24720b43-3563-4689-9968-53e54452cf49" />
 
+1. Project Overview
+This project demonstrates how to deploy a secure and scalable 2-tier web application with vpc on AWS using infrastructure-as-code with CloudFormation.
+
+🔧 What This Project Includes:
+🛡️ A custom VPC split into public and private subnets
+🖥️ A public EC2 instance that acts as both:
+A web server (running Apache Tomcat)
+A bastion host to access private resources
+🛠️ A private EC2 instance used to test database connections securely
+🗄️ An RDS MySQL database in the private subnet
+💻 A Java web application hosted on Apache Tomcat, connected to RDS
+
 
 
 
